@@ -18,10 +18,10 @@ public class CreateBoard : MonoBehaviour
       [SerializeField] private GameObject treePrefab;
      [SerializeField] private TextMeshProUGUI score;
      GameObject[] tiles;
-
-     long dirtBoard=0;
-     long treeBB=0;
-     long playerBB=0;
+     long desertBoard = 0;
+     long dirtBoard = 0;
+     long treeBB = 0;
+     long playerBB = 0;
    
     void Start()
     {
@@ -38,6 +38,9 @@ public class CreateBoard : MonoBehaviour
               
                  if(tile.tag == "Dirt"){
                     dirtBoard = SetCellState(dirtBoard,r,c);
+                 }
+                 if(tile.tag== "Desert"){
+                    desertBoard = SetCellState(desertBoard,r,c);
                  }
                  
                  
@@ -61,6 +64,9 @@ public class CreateBoard : MonoBehaviour
     }
     void PrintBB(string name, long BB){
         Debug.Log(name + ":" + Convert.ToString(BB,2).PadLeft(64,'0'));
+    }
+    void PrintScore(){
+        score.text = $"Score: {(CellCount(playerBB & dirtBoard)* 10) + (CellCount(playerBB & desertBoard)*2)} ";
     }
     long SetCellState(long bitBoard,int r, int c){
         long newBit  = 1L<< (r*8 + c);
@@ -88,13 +94,13 @@ public class CreateBoard : MonoBehaviour
            
            int row =  (int)hit.collider.gameObject.transform.position.z;
            int col = (int)hit.collider.gameObject.transform.position.x;
-           if(GetCellState(dirtBoard & ~treeBB , row ,col)){
+           if(GetCellState((dirtBoard & ~treeBB) | desertBoard, row ,col)){
             GameObject house = Instantiate(housePrefab);
             house.transform.parent = hit.collider.gameObject.transform;
             house.transform.localPosition = Vector3.zero;
             
             playerBB=SetCellState(playerBB,row,col );
-            
+            PrintScore();
            }
            
            
